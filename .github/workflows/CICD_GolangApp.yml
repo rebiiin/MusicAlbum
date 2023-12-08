@@ -1,0 +1,60 @@
+name: Golang-App-Workflow
+'on':
+  push:
+    branches:
+      - main
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout-Repository
+        uses: actions/checkout@v4
+
+      - name: Setup-Golang
+        uses: actions/setup-go@v4
+        with:
+          go-version: '1.21'
+          check-latest: true
+      - run: go version
+
+      - name: Install-Golang-Dependencies
+        run: go mod download
+
+      - name: Build-Golang-App
+        run: GOOS=linux go build -o build/MusicAlbumAPI -v
+
+      - name: Display-Build-Golang-App
+        run: ls -R build/
+
+      - name: Create-Env-File
+        run: 'echo "APIKey=${{ secrets.APIKey }}" > build/.env'
+
+      - name: Display-Env-File
+        run: cat build/.env
+
+      - name: Run-Unit-Test-Golang-App
+        run: go test
+
+      - name: Copy-Build-Golang-App
+        uses: appleboy/scp-action@master
+        with:
+          host: '${{ secrets.VM_HOST }}'
+          username: '${{ secrets.VM_USERNAME }}'
+          key: '${{ secrets.VM_SSH_KEY }}'
+          port: '${{ secrets.VM_SSH_PORT }}'
+          source: build/
+          target: /var/www/GoApplications
+
+      - name: Deploy-Build-Golang-App-To-Ubuntu-VM
+        uses: appleboy/ssh-action@master
+        with:
+          host: '${{ secrets.VM_HOST }}'
+          username: '${{ secrets.VM_USERNAME }}'
+          key: '${{ secrets.VM_SSH_KEY }}'
+          port: '${{ secrets.VM_SSH_PORT }}'
+          script: |
+            cd /var/www/GoApplications/build
+            ls -l
+            sudo systemctl reload nginx
+            sudo systemctl status nginx
