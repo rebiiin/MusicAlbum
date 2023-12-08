@@ -8,6 +8,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      
       - name: Checkout-Repository
         uses: actions/checkout@v4
 
@@ -45,6 +46,7 @@ jobs:
           port: '${{ secrets.VM_SSH_PORT }}'
           source: build/
           target: /var/www/GoApplications
+
 
       - name: Deploy-Build-Golang-App-To-Ubuntu-VM
         uses: appleboy/ssh-action@master
