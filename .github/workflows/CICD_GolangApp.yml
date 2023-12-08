@@ -4,7 +4,7 @@ name: Golang-App-Workflow
     branches:
       - main
 jobs:
-  build:
+  build-GoAppliation:
     runs-on: ubuntu-latest
 
     steps:
