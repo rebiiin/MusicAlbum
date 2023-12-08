@@ -47,7 +47,6 @@ jobs:
           source: build/
           target: /var/www/GoApplications
 
-
       - name: Deploy-Build-Golang-App-To-Ubuntu-VM
         uses: appleboy/ssh-action@master
         with:
